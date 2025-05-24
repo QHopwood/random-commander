@@ -1,13 +1,13 @@
 import React from "react";
 import SidebarTab from "../SidebarTab";
-import FilterComponent from "../FilterComponent";
+import FilterListComponent from "../FilterListComponent";
 import styles from "./OptionsSidebar.module.css";
 
 const tabs = [
   {
     label: "Filters",
     icon: "🖊️",
-    content: <FilterComponent />,
+    content: <FilterListComponent />,
   },
   {
     label: "Likes",

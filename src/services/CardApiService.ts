@@ -17,9 +17,11 @@ interface ScryfallResponseObject {
 export class CardApiService {
   private static instance: CardApiService;
   private apiUrl: string;
+  private commanderQuery: string;
 
   private constructor() {
     this.apiUrl = "https://api.scryfall.com/cards/random";
+    this.commanderQuery = "is%3Acommander";
   }
 
   private mapCardData(data: ScryfallResponseObject): Card {
@@ -41,7 +43,7 @@ export class CardApiService {
 
   public async getRandomCommander(): Promise<Card> {
     try {
-      const response = await fetch(this.apiUrl);
+      const response = await fetch(this.apiUrl + `?q=${this.commanderQuery}&`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
