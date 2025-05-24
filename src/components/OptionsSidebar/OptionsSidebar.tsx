@@ -6,7 +6,7 @@ import styles from "./OptionsSidebar.module.css";
 const tabs = [
   {
     label: "Filters",
-    icon: "🔍",
+    icon: "🖊️",
     content: <FilterComponent />,
   },
   {
@@ -15,9 +15,9 @@ const tabs = [
     content: <div>Appearance Settings</div>,
   },
   {
-    label: "About",
-    icon: "ℹ️",
-    content: <div>About</div>,
+    label: "Search",
+    icon: "🔍",
+    content: <div>Search</div>,
   },
 ];
 const OptionsSidebar: React.FC = () => {
