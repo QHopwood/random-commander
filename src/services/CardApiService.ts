@@ -1,3 +1,5 @@
+import { FilterContextTypes } from "../types/FilterContextTypes";
+
 export interface Card {
   imageUrl: string;
   name: string;
@@ -7,10 +9,20 @@ export interface Card {
 }
 
 interface ScryfallResponseObject {
-  imageUrl: string;
+  id: string;
   name: string;
-  setName: string;
-  description: string;
+  image_uris?: {
+    small: string;
+    normal: string;
+    large: string;
+    png: string;
+    art_crop: string;
+    border_crop: string;
+  };
+  mana_cost: string;
+  type_line: string;
+  oracle_text: string;
+  set_name: string;
   finishes: string[];
 }
 
@@ -26,10 +38,10 @@ export class CardApiService {
 
   private mapCardData(data: ScryfallResponseObject): Card {
     return {
-      imageUrl: data.imageUrl ?? "",
+      imageUrl: data.image_uris?.normal ?? "",
       name: data.name ?? "",
-      setName: data.setName ?? "",
-      description: data.description ?? "",
+      setName: data.set_name ?? "",
+      description: data.oracle_text ?? "",
       treatments: data.finishes ?? [],
     };
   }
@@ -41,9 +53,28 @@ export class CardApiService {
     return CardApiService.instance;
   }
 
-  public async getRandomCommander(): Promise<Card> {
+  private buildScryfallQuery(filters: FilterContextTypes): string {
+    let query = "is:commander";
+    if (filters.colors && filters.colors.length > 0) {
+      const colorQuery = filters.colors
+        .filter((c) => c.checked)
+        .map((c) => c.value[0].toUpperCase())
+        .join("");
+      if (colorQuery) query += ` c:${colorQuery}`;
+    }
+    if (filters.minCMV) query += ` cmc>=${filters.minCMV}`;
+    if (filters.maxCMV && filters.maxCMV !== Number.MAX_VALUE)
+      query += ` cmc<=${filters.maxCMV}`;
+    // Add more filter logic as needed
+    return query;
+  }
+
+  public async getRandomCommander(filters?: FilterContextTypes): Promise<Card> {
+    const query = filters ? this.buildScryfallQuery(filters) : "is:commander";
     try {
-      const response = await fetch(this.apiUrl + `?q=${this.commanderQuery}&`);
+      const response = await fetch(
+        `${this.apiUrl}?q=${encodeURIComponent(query)}`,
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

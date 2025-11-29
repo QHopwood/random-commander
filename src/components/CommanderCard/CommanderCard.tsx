@@ -1,14 +1,34 @@
 import React from "react";
+import { useNetwork } from "../../contexts/NetworkContext";
+import cardPlaceholderImg from "../../assets/card.jpeg";
+import styles from "./CommanderCard.module.css";
 
-interface CommanderCardProps {
-  url: string;
-  alt: string;
-}
+const CommanderCard: React.FC = () => {
+  const { card, loading } = useNetwork();
+  const [imgLoaded, setImgLoaded] = React.useState(false);
 
-const CommanderCard: React.FC<CommanderCardProps> = ({ url, alt }) => {
+  React.useEffect(() => {
+    setImgLoaded(false);
+  }, [card?.imageUrl, loading]);
+
+  const handleImgLoad = () => setImgLoaded(true);
+
+  // Show placeholder only while loading or before card is loaded
+  const showPlaceholder = loading || !card || !card.imageUrl;
+  const imageSrc = showPlaceholder ? cardPlaceholderImg : card.imageUrl;
+  const imageAlt = showPlaceholder ? "Card placeholder" : card.name;
+
   return (
-    <div>
-      <img src={url} alt={alt} />
+    <div className={styles.cardContainer}>
+      <div className={styles.spinnerOverlay}>
+        <img
+          src={imageSrc}
+          alt={imageAlt}
+          className={`${styles.cardImage} ${imgLoaded ? styles.loaded : ""}`}
+          onLoad={handleImgLoad}
+        />
+        {loading && <div className={styles.spinner}></div>}
+      </div>
     </div>
   );
 };

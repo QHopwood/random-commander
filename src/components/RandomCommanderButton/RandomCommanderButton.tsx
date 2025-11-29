@@ -1,12 +1,14 @@
 import React from "react";
+import { useNetwork } from "../../contexts/NetworkContext";
 
-interface ButtonProps {
-  onClick: () => void;
-}
-const RandomCommanderButton: React.FC<ButtonProps> = ({ onClick }) => {
+const RandomCommanderButton: React.FC = () => {
+  const { fetchCard, loading } = useNetwork();
+  const handleClick = () => {
+    void fetchCard(); // Ensure promise is not returned to onClick
+  };
   return (
-    <button type="button" onClick={onClick}>
-      Generate Commander
+    <button type="button" onClick={handleClick} disabled={loading}>
+      {loading ? "Loading..." : "Generate Commander"}
     </button>
   );
 };
